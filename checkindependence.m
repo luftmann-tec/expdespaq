@@ -1,24 +1,23 @@
-function sortedA=checkindependence(residlin,ij,Aord)
-%CHECKINDEPENDENCE Revisión del supuesto de independencia para Anovas
+%[text] # checkindependence
+%[text] Check of independence of residuals.
+function checkindependence(resid,xord)
 
-%Ordenación según corridas experimentales
+disp('Check of independence')
 
-if isempty(Aord)
-    sortedA=residlin;
-else
-    Aordlin=reshape(Aord,1,ij);
-    B=[Aordlin; residlin];
-    Bnew=sortpar(B);
-    sortedA=Bnew(2,:);
+t=length(resid);
+
+if nargin<2
+    xord=1:t;
 end
 
-q=1:ij;
-
 figure
-plot(q,sortedA,'s')
-line([1 ij],[0 0],'Color','r')
-axis([0 ij+1 -1 1])
-axis 'auto y'
-title('Check of independence assumption')
-xlabel('Experimental Running')
+plot(xord,resid,'s','LineWidth',1.5)
+yline(0,'LineWidth',1.5)
+xlabel('Sequence or observations')
 ylabel('Residuals')
+xlim([0 t+1])
+
+end
+
+%[appendix]{"version":"1.0"}
+%---

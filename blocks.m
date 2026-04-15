@@ -1,79 +1,58 @@
-function p=blocks(A,xindepend,ydepend,xdata,Aord)
-%BLOCKS Diseño experimental unifactorial por bloques
-%
-%   BLOCKS Realiza una anova de un diseño unifactorial por bloques
-%
-%   Se presenta:
-%
-%   1. Los p-value del ANOVA variable independiente y bloqueada (Reporte y
-%   gráfica de cajas).
-%   2. Prueba de Rango múltiples (Gráfica interactiva y de reporte).
-%   3. Verificación de supuestos: Residuos vs. Experimentos.
-%   4. Verificación de supuestos: Residuos vs. Niveles de la variable
-%   independiente.
-%   5. Ajuste de residuos a la distribución normal.
+%[text] # blocks
+%[text] Analysis of Variance (ANOVA) blocks design
+function p = blocks(data,group,alpha1,alpha2,xindepend,ydepend,xord)
 
-%   Ing. Rodolfo Salazar Peña M. en C.
-%   Revisado: 11/Mar/2011
+[~,mm]=size(data);
+xdata = 1:mm;
 
-%Dimensiones de la matriz de datos
-[i,j]=size(A);
-ij=i*j;
-
-if nargin<4 || isempty(xdata);
-    xdata=1:j;
+if nargin<7
+    xord=1:numel(data);
+else
+    [numrow,numcol]=size(xord);
+    xord=xord+numcol*(0:numrow-1)';
+    xord=xord.';
+    xord=xord(:).';
 end
 
-if nargin<5
-    Aord=[];
+disp(xord)
+
+[p,~,stats]=anova2(data);
+
+pValue=p(1);
+pValueBlock = p(2);
+
+if pValueBlock>alpha2
+    fprintf('Fail to reject the null hypothesis at alpha2 = %.2f\n', alpha2);
+    disp('Block design is not justified')         
+else
+    fprintf('Reject the null hypothesis at alpha2 = %.2f\n', alpha2);
+    disp('Block design is justified')
+    if pValue>alpha1
+        fprintf('Fail to reject the null hypothesis at alpha1 = %.2f\n', alpha1);
+        disp('Overall treatment effect is not significant');
+    else
+        fprintf('Reject the null hypothesis at alpha1 = %.2f\n', alpha1);
+        disp('Overall treatment effect is significant');
+
+        [~,~] = rangmult(stats,alpha1,xdata,group,xindepend,ydepend);
+
+        disp('Goodness-of-fit tests')
+       
+        residuals=data-mean(data)-mean(data,2)+mean(data(:));
+        residuals=residuals.';
+        resid=residuals(:).';
+
+        checkindependence(resid,xord)
+
+        homoscedasticity(data,residuals,xdata,alpha1,group,xindepend,ydepend);
+
+        normality(resid)
+
+    end
 end
 
-%Análisis de varianza
-[p,table,stats]=anova2(A);
-
-stats
-
-%Justificación del bloqueo
-
-if p(2)>0.05
-    disp('Blockade is not justified. The data is changed to unifactorial analysis')
-    p=unifactor(A,xindepend,ydepend,xdata,Aord);
-    return
+    
 end
 
-%Prueba de Bartlett
-%pbartlett=vartestn(A);
-%xlabel(xindepend)
-%ylabel(ydepend)
-
-%%Prueba de rangos múltiples, método de la mínima diferencia signifactiva.
-
-if p(1)<0.05
-    [c,m]=rangmult(stats,j,xindepend,ydepend,xdata);
-end
-
-%Cálculo de residuos
-
-%Cálculo de residuos
-v=mean(A');
-Alin=reshape(A,1,ij);
-mAlin=mean(Alin);
-resid=A-ones(i,j)*diag(m(:,1))-diag(v)*ones(i,j)+mAlin;
-residlin=resid(:)';
-
-%Análisis de supuestos
-
-%Supuesto de independencia
-
-sortedA=checkindependence(residlin,ij,Aord); 
-
-%Supusto de varianza constante
-
-wlin=checkconstvar(residlin,i,j,xindepend,xdata);
-
-%supuesto de normalidad
-
-figure
-normplot(residlin)
-title('Check of normality assumption')
-xlabel('Residuals')
+%[appendix]{"version":"1.0"}
+%---
