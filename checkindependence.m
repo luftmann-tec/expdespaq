@@ -2,7 +2,14 @@
 %[text] Check of independence of residuals.
 function checkindependence(resid,xord)
 
-disp('Check of independence')
+% arguments (Input)
+%     resid
+%     xord
+% end
+% 
+% arguments (Output)
+% 
+% end
 
 t=length(resid);
 

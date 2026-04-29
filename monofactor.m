@@ -5,15 +5,30 @@
 %[text] ## Execution
 function [p,tbl] = monofactor(data,group,alpha,xindepend,ydepend,xord)
 
+arguments (Input)
+    data table
+    group cell
+    alpha double
+    xindepend 
+    ydepend
+    xord table
+end
+
+arguments (Output)
+    p double
+    tbl table
+end
+
+data=table2array(data);
+
 if nargin<6
     xord=1:numel(data);
+else
+    xord=table2array(xord);
 end
 
 [~,mm]=size(data);
 xdata = 1:mm;
-%[text] ### Inputs
-%[text] `data`: set of observations being each column correspoding to the *i*-th treatment.
-%[text] Outputs
 %[text] ## One-way ANOVA
 %[text] The one-way ANOVA is permormed with [`anova1`](https://la.mathworks.com/help/releases/R2025b/stats/anova1.html). 
 [p,tbl,stats]=anova1(data,group,"off");
@@ -31,6 +46,7 @@ else
     disp(['There are differences between the treatments ' xindepend])
 %[text] ## Multiple comparison test
 %[text] If null hypothesis is rejected then there are differences between the treatments. Then the multiple comparison should be carried out. Pairwise comparisons are performed using [`multcompare`](https://la.mathworks.com/help/releases/R2025b/stats/multcompare.html) with the least significant difference procedure (LSD) at the same significance level as the ANOVA.
+    disp('Multiple comparison test')
     [~,~] = rangmult(stats,alpha,xdata,group,xindepend,ydepend);
     
 end %% for Hypotheis test
@@ -42,13 +58,16 @@ residuals = data - mean(data);
 resid=residuals(:).';
 xord=xord(:).';
 %[text] ### Check of indpendence
+disp('1. Check of indpendence')
 checkindependence(resid,xord)
 %[text] ### Check of Homoscedasticity
 %[text] The check of homoscedasticity has the hypotheis test
 %[text] $\\begin{cases}\nH\_0:\\sigma\_1=\\sigma\_2=\\ldots\\sigma\_m & \\\\\nH\_1:\\sigma\_i\\neq\\sigma\_j & \\mathrm{for\\,at\\,least\\,one\\,pair}\\,(i,j)\n\\end{cases}$
 %[text] for sake of simplicity, with the same significance level $\\alpha$ of the ANOVA. Nevertheless, this is not scrictly necessary. The analysis is carried out with the [`vartestn`](https://la.mathworks.com/help/stats/vartestn.html) command with the Bartlett test.
+disp('2. Check of Homogeneous Variance (Homoscedasticity)')
 homoscedasticity(data,residuals,xdata,alpha,group,xindepend,ydepend);
 %[text] **Check of normality**
+disp('3. Check of of Normality')
 normality(resid)
 %[text] ### End of Function
 disp('End of function monofactor')

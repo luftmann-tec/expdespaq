@@ -4,7 +4,20 @@
 %[text] for sake of simplicity, with the same significance level $\\alpha$ of the ANOVA. Nevertheless, this is not scrictly necessary. The analysis is carried out with the [`vartestn`](https://la.mathworks.com/help/stats/vartestn.html) command with the Bartlett test.
 function pbartlett = homoscedasticity(data,residuals,xdata,alpha,group,xindepend,ydepend)
 
-disp('Check of Homoscedasticity')
+% arguments (Input)
+%     data
+%     residuals
+%     xdata
+%     alpha
+%     group
+%     xindepend
+%     ydepend
+% end
+% 
+% arguments (Output)
+%     pbartlett
+% end
+
 mm=length(xdata);
 
 figure

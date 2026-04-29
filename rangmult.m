@@ -1,17 +1,33 @@
 %[text] # rangmult
 %[text] The multiple comparison is carried out. Pairwise comparisons are performed using [`multcompare`](https://la.mathworks.com/help/releases/R2025b/stats/multcompare.html) with the least significant difference procedure (LSD) at the same significance level as the ANOVA.
 function [c,m] = rangmult(stats,alpha,xdata,group,xindepend,ydepend,roworcolumn)
-    disp('Multiple comparison test')
+
+% arguments (Input)
+%     stats
+%     alpha
+%     xdata
+%     group
+%     xindepend
+%     ydepend
+%     roworcolumn
+% end
+
+% arguments (Output)
+%     c
+%     m
+% end
 
     if nargin<7
         roworcolumn='column';
     end
-   
+  
+    disp('Interactive Graph')
     figure
     [c,m]=multcompare(stats,'CriticalValueType','lsd','Alpha',alpha,'Estimate',roworcolumn);
-    h=(c(1,5)-c(1,4))/2
-    mm=length(xdata)
+    h=(c(1,5)-c(1,4))/2;
+    mm=length(xdata);
 
+    disp('Graph for report')
     figure
     errorbar(xdata.',m(:,1),h*ones(mm,1),'*')
     xlim([0.5 mm+0.5])

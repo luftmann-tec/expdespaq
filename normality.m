@@ -1,7 +1,15 @@
 %[text] # normality
 %[text] Check of normal distribution of residuals.
 function normality(resid)
-disp('Check of normality')
+
+% arguments (Input)
+%     resid
+% end
+% 
+% arguments (Output)
+%     
+% end
+
 figure
 subplot(1,2,1)
 normplot(resid)
@@ -14,6 +22,7 @@ pd = fitdist(resid', 'Normal');
 y = pdf(pd, x);
 plot(x, y, 'r-', 'LineWidth', 1.5)
 ylabel('Probability Density')
+xlabel('Residuals')
 title('Normality Check of Residuals')
 fig=gcf;
 fig.Position(3)=1120;
