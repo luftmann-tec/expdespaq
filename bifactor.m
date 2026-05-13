@@ -56,6 +56,7 @@ else
     fprintf('Reject the null hypothesis at alpha = %.2f.\n', alpha);
     disp(['There is a significant interaction between the two factors ' xindepend{1} ' and ' xindepend{2}]);
     proms=reshape(promedios,[tamano2 tamano1]);
+    figure
     plot(Var2,proms,'-s','MarkerFaceColor','auto');
     xlabel(xindepend{2})
     ylabel(ydepend)
